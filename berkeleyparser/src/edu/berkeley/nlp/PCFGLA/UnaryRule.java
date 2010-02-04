@@ -1,5 +1,7 @@
 package edu.berkeley.nlp.PCFGLA;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import edu.berkeley.nlp.util.*;
@@ -98,24 +100,91 @@ public class UnaryRule extends Rule implements java.io.Serializable, Comparable 
   private static final char[] charsToEscape = new char[]{'\"'};
 
   public String toString() {
-    Numberer n = Numberer.getGlobalNumberer("tags");
-    String cState = (String)n.object(childState);
-    if (cState.endsWith("^g")) cState = cState.substring(0,cState.length()-2);
-    String pState = (String)n.object(parentState);
-    if (pState.endsWith("^g")) pState = pState.substring(0,pState.length()-2);
-    if (scores==null) return pState+" -> "+cState+"\n";
-    StringBuilder sb = new StringBuilder();
-    for (int cS=0; cS<scores.length; cS++){
-  		if (scores[cS]==null) continue;
-  		for (int pS=0; pS<scores[cS].length; pS++){
-  			double p = scores[cS][pS]; 
-  			if (p>0)
-  				sb.append(pState+"_"+pS+ " -> " + cState+"_"+cS +" "+p+"\n");
-  		}
-    }
-    return sb.toString();
-  }
+	    Numberer n = Numberer.getGlobalNumberer("tags");
+	    String cState = (String)n.object(childState);
+	    if (cState.endsWith("^g")) cState = cState.substring(0,cState.length()-2);
+	    String pState = (String)n.object(parentState);
+	    if (pState.endsWith("^g")) pState = pState.substring(0,pState.length()-2);
+	    if (scores==null) return pState+" -> "+cState+"\n";
+	    StringBuilder sb = new StringBuilder();
+	    for (int cS=0; cS<scores.length; cS++){
+	  		if (scores[cS]==null) continue;
+	  		for (int pS=0; pS<scores[cS].length; pS++){
+	  			double p = scores[cS][pS]; 
+	  			if (p>0)
+	  				sb.append(pState+"_"+pS+ " -> " + cState+"_"+cS +" "+p+"\n");
+	  		}
+	    }
+	    return sb.toString();
+	  }
   
+	//TODO : fix to create only for different LHS
+	public List<Pair<Integer, Integer>> getAllSubRules(double[][] scores2) {
+		List<Pair<Integer, Integer>> subrules = new ArrayList<Pair<Integer,Integer>>();
+
+	    for (int cS=0; cS<scores2.length; cS++){
+	    	if (scores2[cS] == null)
+				continue;
+	  		for (int pS=0; pS<scores2[cS].length; pS++){
+	  			subrules.add(new Pair<Integer, Integer>(cS, pS)); 
+	  		}
+	    }
+
+		return subrules;
+	}
+	
+	public String getStrSubRule(Pair<Integer, Integer> pair) {
+	    Numberer n = Numberer.getGlobalNumberer("tags");
+	    String cState = (String)n.object(childState);
+	    if (cState.endsWith("^g")) cState = cState.substring(0,cState.length()-2);
+	    String pState = (String)n.object(parentState);
+	    if (pState.endsWith("^g")) pState = pState.substring(0,pState.length()-2);
+	    if (scores==null) return pState+" -> "+cState+"\n";
+	    StringBuilder sb = new StringBuilder();
+	    
+		sb.append(pState+"_"+ pair.getSecond() + " -> " + cState+"_"+ pair.getFirst());
+
+	    return sb.toString();
+	}
+
+	public double getCountForSubRule(double[][] scores2, Pair<Integer, Integer> pair) {
+		return scores2[pair.getFirst()][pair.getSecond()];
+	}
+
+	public void setProbForSubRule(double[][] scores2, Pair<Integer, Integer> pair, double prob) {
+		if (scores2 != null &&
+				pair.getFirst() < scores2.length &&
+				scores2[pair.getFirst()] != null &&
+				pair.getSecond() < scores2[pair.getFirst()].length)
+		scores2[pair.getFirst()][pair.getSecond()] = prob;
+	}
+
+	public void incProbForSubRule(double[][] scores2, Pair<Integer, Integer> pair, double prob) {
+		if (scores2 != null &&
+				pair.getFirst() < scores2.length &&
+				scores2[pair.getFirst()] != null &&
+				pair.getSecond() < scores2[pair.getFirst()].length)
+			scores2[pair.getFirst()][pair.getSecond()] += prob;
+	}
+
+	  
+  public String toStringSEIE() {
+	    Numberer n = Numberer.getGlobalNumberer("tags");
+	    String cState = (String)n.object(childState);
+	    if (cState.endsWith("^g")) cState = cState.substring(0,cState.length()-2);
+	    String pState = (String)n.object(parentState);
+	    if (pState.endsWith("^g")) pState = pState.substring(0,pState.length()-2);
+	    if (scores==null) return pState+" -> "+cState+"\n";
+	    StringBuilder sb = new StringBuilder();
+	    for (int cS=0; cS<scores.length; cS++){
+	  		if (scores[cS]==null) continue;
+	  		for (int pS=0; pS<scores[cS].length; pS++){
+	  				sb.append(pState+"_"+pS+ " -> " + cState+"_"+cS+" ");
+	  		}
+	    }
+	    return sb.toString();
+	  }
+	  
   public String toString_old() {
     Numberer n = Numberer.getGlobalNumberer("tags");
     return "\"" + 
