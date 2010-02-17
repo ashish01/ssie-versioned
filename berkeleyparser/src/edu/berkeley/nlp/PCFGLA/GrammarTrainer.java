@@ -37,7 +37,7 @@ public class GrammarTrainer {
 		public String path = null;
 
 		@Option(name = "-SMcycles", usage = "The number of split&merge iterations (Default: 6)")
-		public int numSplits = 6;
+		public int numSplits = 3;
 
 		@Option(name = "-mergingPercentage", usage = "Merging percentage (Default: 0.5)")
 		public double mergingPercentage = 0.5;
@@ -346,6 +346,10 @@ public class GrammarTrainer {
 			}
 			lexicon.tieRareWordStats(opts.rare);
 			lexicon.optimize();
+			
+			//SSIE
+			((SophisticatedLexicon) lexicon).overwriteWithMaxent();
+
 			grammar.optimize(randomness);
 			//System.out.println(grammar);
 			previousGrammar = maxGrammar = grammar; //needed for baseline - when there is no EM loop
@@ -532,6 +536,10 @@ public class GrammarTrainer {
 			}
 		}
 		lexicon.tieRareWordStats(unkThreshold);
+
+		//SSIE
+		((SophisticatedLexicon) lexicon).overwriteWithMaxent();
+
         return trainingLikelihood;
 	}
 

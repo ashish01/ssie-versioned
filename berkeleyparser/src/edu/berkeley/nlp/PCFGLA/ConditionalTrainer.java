@@ -893,6 +893,9 @@ public class ConditionalTrainer {
 				trainingLikelihood  += ll;  // there are for some reason some sentences that are unparsable 
 			}
 		}
+		//SSIE
+		((SophisticatedLexicon) lexicon).overwriteWithMaxent();
+		
 		return trainingLikelihood;
 	}
 

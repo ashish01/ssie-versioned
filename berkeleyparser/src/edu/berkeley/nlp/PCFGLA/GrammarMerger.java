@@ -208,7 +208,10 @@ public class GrammarMerger {
 				}
 			}
 			System.out.println("The training LL is "+trainingLikelihood);
-				
+
+			//SSIE
+			((SophisticatedLexicon) lexicon).overwriteWithMaxent();
+
 			newLexicon.optimize();//Grammar.RandomInitializationType.INITIALIZE_WITH_SMALL_RANDOMIZATION);   // M Step
 			newGrammar.optimize(0);// Grammar.RandomInitializationType.INITIALIZE_WITH_SMALL_RANDOMIZATION);  // M Step
 			newParser = new ArrayParser(newGrammar, newLexicon);
